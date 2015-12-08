@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
+"""
+添加照片信息
+"""
 import sys
-import database
+import api.libs.database
 
-db = database.Database()
+db = api.libs.database.Database()
 photos = []
 
 for line in sys.stdin:

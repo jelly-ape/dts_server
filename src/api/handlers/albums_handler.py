@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 import bson.objectid
-import base_handler
+import api.handlers.base_handler
 import api.libs.database
 import api.libs.log
 
 
 
-class AlbumsHandler(base_handler.BaseHandler):
+class AlbumsHandler(api.handlers.base_handler.BaseHandler):
     """写真集 URI
     """
 

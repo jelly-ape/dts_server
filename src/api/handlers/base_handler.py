@@ -25,7 +25,7 @@ class BaseHandler(tornado.web.RequestHandler):
         """
         ret = {
             'errno': self._errno,
-            'data': self._rets,
+            'data': self._rets if self._rets else None,
         }
         ret_json = json.dumps(ret)
         super(BaseHandler, self).write(ret_json)

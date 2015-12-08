@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-import base_handler
+import api.handlers.base_handler
 import api.libs.database
 
 
-class PhotosHandler(base_handler.BaseHandler):
+class PhotosHandler(api.handlers.base_handler.BaseHandler):
     """照片 URI
     """
 

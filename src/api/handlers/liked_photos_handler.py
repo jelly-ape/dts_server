@@ -5,12 +5,12 @@ import api.modules.user_manager
 import api.libs.log
 
 
-class GetLikesHandler(api.handlers.base_handler.BaseHandler):
+class LikedPhotosHandler(api.handlers.base_handler.BaseHandler):
     """用户点赞信息 URI
     """
 
     def __init__(self, *args, **kwargs):
-        super(GetLikesHandler, self).__init__(*args, **kwargs)
+        super(LikedPhotosHandler, self).__init__(*args, **kwargs)
         self.__user_mgr = api.modules.user_manager.UserManager()
 
     def __log_arguments(self):
@@ -18,15 +18,25 @@ class GetLikesHandler(api.handlers.base_handler.BaseHandler):
         self._logs['os'] = self.get_argument('os', None)
         self._logs['ver'] = self.get_argument('ver', None)
 
+    def __get_photos(self):
+        photo_gen = self.__user_mgr.get_likes(
+            self.get_argument('uid'),
+        )
+        rets = []
+        for photo in photo_gen:
+            rets.append({
+                'date': photo['date'],
+                'photo_id': photo['photo_id'],
+            })
+        return rets
+
     def get(self):
         logger_level = 'info'
         try:
             logger = api.libs.log.get_logger('user')
             self.__log_arguments()
-            photo_ids = self.__user_mgr.get_likes(
-                self.get_argument('uid'),
-            )
-            self._rets['liked_photos'] = list(photo_ids)
+            photos = self.__get_photos()
+            self._rets['liked_photos'] = photos
         except Exception as e:
             self._errno = api.libs.define.ERR_FAILURE
             self._logs['msg'] = str(e)

@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-import redis
-import api.libs.config
+import pymongo
+import time
+import api.libs.database
+import api.libs.utils
 
 
+@api.libs.utils.singleton
 class UserManager(object):
     """用户管理器. 实现了如下功能:
 
@@ -12,66 +15,47 @@ class UserManager(object):
     """
 
     def __init__(self):
-        self.__redis = self.__init_redis()
+        self.__like_store = self.__init_store()
 
-    def __init_redis(self):
-        conf = api.libs.config.get_config()
-        host = conf.get('redis', 'host')
-        port = conf.getint('redis', 'port')
-        db_index = conf.getint('redis', 'db_index')
-        return redis.StrictRedis(host=host, port=port, db=db_index)
+    def __init_store(self):
+        """初始化储存
+        """
+        like_store = api.libs.database.Database().likes
+        like_store.create_index(
+            [('uid', pymongo.ASCENDING), ('photo_id', pymongo.ASCENDING)],
+            unique=True,
+        )
+        return like_store
 
-    def set_profile(self, uid, profile_dict):
-        """设定用户的简介. 必定是 key-value 结构
+    def insert_a_like(self, uid, photo_id):
+        """添加一个点赞
 
         参数:
             uid: 用户 ID
-            profile_dict: 简介信息的词典
+            photo_id: 照片 ID
 
         返回:
-            返回添加成功与否
+            返回点赞成功与否
         """
-        assert type(profile_dict) is dict
-        key = 'DTS_USER_PROFILE_' + uid
-        return self.__redis.hmset(key, profile_dict)
-
-    def get_profile(self, uid):
-        """获取用户的简介
-
-        参数:
-            uid: 用户 ID
-
-        返回:
-            返回用户的简介词典. key-value 结构.
-        """
-        key = 'DTS_USER_PROFILE_' + uid
-        return self.__redis.hgetall(key)
-
-    def like(self, uid, photo_id):
-        """点赞
-
-        参数:
-            uid: 用户 ID
-            photo_id: 照片的 ID
-
-        返回:
-            返回添加成功与否
-        """
-        key = 'DTS_USER_LIKE_' + uid
-        ret = self.__redis.sadd(key, photo_id)
-        if ret == 0:  # 不成功或者已存在
-            return self.__redis.sismember(key, photo_id)
-        else:
+        like_info = {
+            'uid': uid,
+            'photo_id': photo_id,
+            'date': time.time(),  # UTC 时间戳
+        }
+        try:
+            return self.__like_store.insert(like_info)
+        except pymongo.errors.DuplicateKeyError:
             return True
+        except Exception as e:
+            raise e
 
     def get_likes(self, uid):
-        """获取点赞的图片 ID 集合
+        """获取用户的点赞情况
 
         参数:
             uid: 用户 ID
 
         返回:
-            返回该用户的点赞图片集合
+            返回点赞的照片 ID
         """
-        key = 'DTS_USER_LIKE_' + uid
-        return self.__redis.smembers(key)
+        return self.__like_store.find({'uid': uid})

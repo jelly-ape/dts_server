@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 import bson.objectid
 import api.handlers.base_handler
-import api.libs.database
+import api.modules.album_manager
 import api.libs.log
 
 
@@ -13,7 +13,7 @@ class AlbumsHandler(api.handlers.base_handler.BaseHandler):
 
     def __init__(self, *args, **kwargs):
         super(AlbumsHandler, self).__init__(*args, **kwargs)
-        self.__db = api.libs.database.Database()
+        self.__album_mgr = api.modules.album_manager.AlbumManager()
         self.__cdn_domain = self._conf.get('cdn', 'domain')
 
     def __log_arguments(self):
@@ -51,7 +51,7 @@ class AlbumsHandler(api.handlers.base_handler.BaseHandler):
             pass
 
         self._rets['albums'] = []
-        albums = self.__db.get_albums(albums_info).limit(max_albums)
+        albums = self.__album_mgr.get(albums_info).limit(max_albums)
         last_id = None
         for album in albums:
             last_id = album['_id']

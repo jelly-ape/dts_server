@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
+import api.libs.log
 import api.handlers.base_handler
-import api.libs.database
+import api.modules.photo_manager
 
 
 class PhotosHandler(api.handlers.base_handler.BaseHandler):
@@ -10,7 +11,8 @@ class PhotosHandler(api.handlers.base_handler.BaseHandler):
 
     def __init__(self, *args, **kwargs):
         super(PhotosHandler, self).__init__(*args, **kwargs)
-        self.__db = api.libs.database.Database()
+        self.__photo_mgr = api.modules.photo_manager.PhotoManager()
+        self.__album_mgr = api.modules.album_manager.AlbumManager()
         self.__cdn_domain = self._conf.get('cdn', 'domain')
 
     def __log_arguments(self):
@@ -38,7 +40,7 @@ class PhotosHandler(api.handlers.base_handler.BaseHandler):
         max_photos = int(self.get_argument('max', 0))
         self._rets['photos'] = []
 
-        photos = self.__db.get_photos({
+        photos = self.__photo_mgr.get({
             'album_name': self.get_argument('album_name', None),
             'press': self.get_argument('press', None),
         }).skip(skip).limit(max_photos)
@@ -50,7 +52,7 @@ class PhotosHandler(api.handlers.base_handler.BaseHandler):
             })
 
     def __get_album_info(self):
-        album_gen = self.__db.get_albums({
+        album_gen = self.__album_mgr.get({
             'name': self.get_argument('album_name', None),
             'press': self.get_argument('press', None),
         })

@@ -5,15 +5,17 @@ import tornado.ioloop
 import api.handlers.albums_handler
 import api.handlers.photos_handler
 import api.handlers.like_handler
-import api.handlers.get_likes_handler
+import api.handlers.liked_photos_handler
 
 
 if __name__ == "__main__":
+    root_path = r'/api/v1'
     application = tornado.web.Application([
-        (r"/api/v1/albums", api.handlers.albums_handler.AlbumsHandler),
-        (r"/api/v1/photos", api.handlers.photos_handler.PhotosHandler),
-        (r"/api/v1/like", api.handlers.like_handler.LikeHandler),
-        (r"/api/v1/get_likes", api.handlers.get_likes_handler.GetLikesHandler),
+        (root_path + r"/albums", api.handlers.albums_handler.AlbumsHandler),
+        (root_path + r"/photos", api.handlers.photos_handler.PhotosHandler),
+        (root_path + r"/user/like", api.handlers.like_handler.LikeHandler),
+        (root_path + r"/user/liked_photos",
+            api.handlers.liked_photos_handler.LikedPhotosHandler),
     ])
     application.listen(8888)
     tornado.ioloop.IOLoop.instance().start()

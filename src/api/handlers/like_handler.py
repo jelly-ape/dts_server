@@ -24,7 +24,7 @@ class LikeHandler(api.handlers.base_handler.BaseHandler):
         try:
             logger = api.libs.log.get_logger('user')
             self.__log_arguments()
-            self.__user_mgr.like(
+            self.__user_mgr.insert_a_like(
                 self.get_argument('uid'),
                 self.get_argument('photo_id'),
             )

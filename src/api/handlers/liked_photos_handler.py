@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
+import bson.objectid
 import api.handlers.base_handler
 import api.modules.user_manager
+import api.modules.photo_manager
 import api.libs.log
 
 
@@ -11,37 +13,34 @@ class LikedPhotosHandler(api.handlers.base_handler.BaseHandler):
 
     def __init__(self, *args, **kwargs):
         super(LikedPhotosHandler, self).__init__(*args, **kwargs)
+        self._logger = api.libs.log.get_logger('user')
+        self.__cdn_domain = self._conf.get('cdn', 'domain')
         self.__user_mgr = api.modules.user_manager.UserManager()
-
-    def __log_arguments(self):
-        self._logs['uid'] = self.get_argument('uid', None)
-        self._logs['os'] = self.get_argument('os', None)
-        self._logs['ver'] = self.get_argument('ver', None)
+        self.__photo_mgr = api.modules.photo_manager.PhotoManager()
 
     def __get_photos(self):
-        photo_gen = self.__user_mgr.get_likes(
-            self.get_argument('uid'),
-        )
-        rets = []
+        rets, photo_ids, date_dict = [], [], {}
+
+        photo_gen = self.__user_mgr.get_likes(self._params['uid'])
         for photo in photo_gen:
+            photo_ids.append(bson.objectid.ObjectId(photo['photo_id']))
+            date_dict[photo['photo_id']] = photo['date']
+
+        photos = self.__photo_mgr.get({'_id': {'$in': photo_ids}})
+        for photo in photos:
+            photo_id = str(photo['_id'])
+            photo_url = '{0}/{1}'.format(
+                self.__cdn_domain,
+                photo['url'],
+            )
             rets.append({
-                'date': photo['date'],
-                'photo_id': photo['photo_id'],
+                'date': date_dict[photo_id],
+                'photo_id': photo_id,
+                'url': photo_url,
             })
+
         return rets
 
-    def get(self):
-        logger_level = 'info'
-        try:
-            logger = api.libs.log.get_logger('user')
-            self.__log_arguments()
-            photos = self.__get_photos()
-            self._rets['liked_photos'] = photos
-        except Exception as e:
-            self._errno = api.libs.define.ERR_FAILURE
-            self._logs['msg'] = str(e)
-            logger_level = 'warning'
-        finally:
-            self._logs['errno'] = self._errno
-            logger.flush(logger_level, self._logs)
-            self._write()
+    def process(self):
+        photos = self.__get_photos()
+        self._rets['liked_photos'] = photos

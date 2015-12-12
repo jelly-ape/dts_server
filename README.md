@@ -22,3 +22,7 @@
 * 图片 URL
 * 点赞数
 * 浏览次数
+
+# 2. API
+
+API 详细请看[文档](https://github.com/jelly-ape/dts_server/wiki)

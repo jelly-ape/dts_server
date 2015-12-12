@@ -42,17 +42,17 @@ class AlbumsHandler(api.handlers.base_handler.BaseHandler):
 
         # 起始位置
         try:
-            albums_info = {
-                '_id': {
-                    '$lt': bson.objectid.ObjectId(self.get_argument('beg_id')),
-                }
-            }
+            albums_info = {'_id': {
+                '$lt': bson.objectid.ObjectId(self.get_argument('beg_id')),
+            }}
         except:
             pass
 
+        # 拼接图片 URL
         self._rets['albums'] = []
-        albums = self.__album_mgr.get(albums_info).limit(max_albums)
         last_id = None
+
+        albums = self.__album_mgr.get(albums_info).limit(max_albums)
         for album in albums:
             last_id = album['_id']
             del album['_id']

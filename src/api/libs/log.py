@@ -34,7 +34,12 @@ class SmartLogger(logging.Logger):
             pairs: 需要输出的数据对
         """
         # 黑名单包括:
-        msg = json.dumps(pairs)
+        msg = '\t'.join(
+            ['='.join([str(x[0]), str(x[1])]) for x in pairs.items()]
+        )
+        self.__make_log(level, msg, *args, **kwargs)
+
+    def __make_log(self, level, msg, *args, **kwargs):
         if level == 'debug':
             if self.isEnabledFor(logging.DEBUG):
                 self._log(logging.DEBUG, msg, args, **kwargs)

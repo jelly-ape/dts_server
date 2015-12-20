@@ -3,6 +3,7 @@
 import api.libs.log
 import api.handlers.base_handler
 import api.modules.photo_manager
+import api.modules.user_manager
 
 
 class PhotosHandler(api.handlers.base_handler.BaseHandler):
@@ -14,6 +15,7 @@ class PhotosHandler(api.handlers.base_handler.BaseHandler):
         self._logger = api.libs.log.get_logger('photos')
         self.__photo_mgr = api.modules.photo_manager.PhotoManager()
         self.__album_mgr = api.modules.album_manager.AlbumManager()
+        self.__user_mgr = api.modules.user_manager.UserManager()
         self.__cdn_domain = self._conf.get('cdn', 'domain')
 
     def __log_arguments(self):
@@ -37,7 +39,7 @@ class PhotosHandler(api.handlers.base_handler.BaseHandler):
         self._params['press'] = self.get_argument('press', None)
         self._params['album_name'] = self.get_argument('album_name', None)
 
-    def __get_photos(self):
+    def __get_photos(self, liked_photos):
         """获取图片
         """
         # 0 为不限制
@@ -49,9 +51,11 @@ class PhotosHandler(api.handlers.base_handler.BaseHandler):
         }).skip(self._params['beg']).limit(self._params['max'])
 
         for photo in photos:
+            photo_id = str(photo['_id'])
             self._rets['photos'].append({
                 "url": "{0}/{1}".format(self.__cdn_domain, photo['url']),
-                "id": str(photo['_id']),
+                "id": photo_id,
+                'is_like': True if photo_id in liked_photos else False,
             })
 
     def __get_album_info(self):
@@ -67,7 +71,15 @@ class PhotosHandler(api.handlers.base_handler.BaseHandler):
         self._rets['press'] = album['press']
         self._rets['models'] = album['models']
 
+    def __get_liked_photos(self):
+        liked_photos = set()
+        photo_gen = self.__user_mgr.get_likes(self._params['uid'])
+        for photo in photo_gen:
+            liked_photos.add(bson.objectid.ObjectId(photo['photo_id']))
+        return liked_photos
+
     def process(self):
         self.__log_arguments()
-        self.__get_photos()
+        liked_photos = self.__get_liked_photos()
+        self.__get_photos(liked_photos)
         self.__get_album_info()

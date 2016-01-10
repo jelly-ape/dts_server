@@ -8,29 +8,31 @@ import api.libs.config
 import api.libs.log
 import api.libs.version
 
-
 class BaseHandler(tornado.web.RequestHandler):
 
     def __init__(self, *args, **kwargs):
         super(BaseHandler, self).__init__(*args, **kwargs)
         self._conf = api.libs.config.get_config()
         self._domain = self._conf.get('server', 'domain')
+        self._cdn_domain = self._conf.get('cdn', 'domain')
         # 子类中可以修改为自己所属的, 不然默认为 root logger
         self._logger = api.libs.log.get_logger('root')
         self._rets = {}
-        self.__log_arguments()
 
-    def __log_arguments(self):
+    def __get_arguments(self):
         """获取那些每个都需要的参数
         """
         # 输入参数
-        self._params = {
-            'ip': self.request.remote_ip,
-            'status': api.libs.define.STAT_SUCCESS,
-            'uid': self.get_argument('uid', None),
-            'os': self.get_argument('os', None),
-            'ver': api.libs.version.Version(self.get_argument('ver', '0.0')),
-        }
+        self._params = api.libs.define.Dict()
+        self._params['status'] = api.libs.define.STAT_SUCCESS
+        self._params['ip'] = self.request.remote_ip
+        self._params['uid'] = self.get_argument('uid')
+        self._params['os'] = self.get_argument('os')
+        self._params['skip'] = int(self.get_argument('skip', 0))
+        self._params['max'] = int(self.get_argument('max', 20))
+        self._params['ver'] = api.libs.version.Version(
+            self.get_argument('ver', '0.0')
+        )
 
     def _write(self):
         """传送到客户端, json 封装
@@ -56,11 +58,19 @@ class BaseHandler(tornado.web.RequestHandler):
         )
         return url
 
+    def _make_url(self, url_suffix):
+        url = '{0}/{1}'.format(
+            self._cdn_domain,
+            url_suffix,
+        )
+        return url
+
     def process(self):
         pass
 
     def get(self):
         try:
+            self.__get_arguments()
             self.process()
             logger_level = 'info'
         except api.libs.define.LogException as e:

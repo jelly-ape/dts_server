@@ -4,6 +4,7 @@
 其实原本我是想用 motor 的, 但是我不会用, 而且感觉不优雅.
 """
 import pymongo
+from bson.objectid import ObjectId
 import utils
 import config
 

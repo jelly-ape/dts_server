@@ -17,3 +17,16 @@ class LogException(Exception):
     @property
     def status(self):
         return self.__status
+
+
+class Dict(dict):
+    """会自动转码的词典
+    """
+
+    def __setitem__(self, key, value):
+        if type(key) is unicode:
+            key = key.encode("utf-8")
+        if type(value) is unicode:
+            value = value.encode("utf-8")
+
+        super(Dict, self).__setitem__(key, value)

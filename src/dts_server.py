@@ -2,6 +2,7 @@
 # -*- encoding: utf-8 -*-
 import tornado.web
 import tornado.ioloop
+import api.libs.config
 import api.modules.update_manager
 import api.handlers.albums_handler
 import api.handlers.photos_handler
@@ -28,11 +29,24 @@ def release_run():
          api.handlers.ranking_handler.RankingHandler),
     ])
 
+    conf = api.libs.config.get_config()
+    update_likes_period = conf.getint('server', 'update_likes_period')
+    update_rand_period = conf.getint('server', 'update_rand_period')
+    port = conf.getint('server', 'port')
+
     # 定时任务
     update_mgr = api.modules.update_manager.UpdateManager()
+    # 第一次运行
     update_mgr.update_likes()
 
-    application.listen(8888)
+    # 定时任务更新
+    tornado.ioloop.PeriodicCallback(update_mgr.update_likes,
+                                    update_likes_period).start()
+    # 全部重新随机需要 4 秒
+    tornado.ioloop.PeriodicCallback(update_mgr.update_rand,
+                                    update_rand_period).start()
+
+    application.listen(port)
     tornado.ioloop.IOLoop.instance().start()
 
 

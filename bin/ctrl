@@ -3,7 +3,7 @@
 function start
 {
     ROOT=${PWD}/`dirname $0`
-    SRC_PATH=${ROOT}/src
+    SRC_PATH=${ROOT}/../src
     PYTHON=/usr/bin/python
 
     cd ${SRC_PATH}

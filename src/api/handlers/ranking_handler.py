@@ -21,11 +21,12 @@ class RankingHandler(api.handlers.base_handler.BaseHandler):
             url = self._make_url(photo['url'])
             photo_id = str(photo['_id'])
             likes = int(photo.get('likes', 0))
-            self._rets['photos'].append({
-                'id': photo_id,
-                'url': url,
-                'likes': likes,
-            })
+            if likes > 0:
+                self._rets['photos'].append({
+                    'id': photo_id,
+                    'url': url,
+                    'likes': likes,
+                })
 
     def process(self):
         self.__get_ranking()

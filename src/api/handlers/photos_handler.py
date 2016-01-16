@@ -34,7 +34,8 @@ class PhotosHandler(api.handlers.base_handler.BaseHandler):
         photos = photo_mgr.get({
             'press': self._params['press'],
             'album_name': self._params['album_name'],
-        }, skip=self._params['skip'], max=self._params['max'])
+        })
+        photos = photos.skip(self._params['skip']).limit(self._params['max'])
 
         for photo in photos:
             url = self._make_url(photo['url'])
@@ -42,6 +43,7 @@ class PhotosHandler(api.handlers.base_handler.BaseHandler):
             self._rets['photos'].append({
                 "url": url,
                 "id": photo_id,
+                'likes': photo.get('likes', 0),
             })
 
     def __get_album_info(self):
@@ -61,4 +63,4 @@ class PhotosHandler(api.handlers.base_handler.BaseHandler):
     def process(self):
         self.__get_arguments()
         self.__get_photos()
-        #self.__get_album_info()
+        self.__get_album_info()

@@ -13,14 +13,17 @@ class LikedPhotosHandler(api.handlers.base_handler.BaseHandler):
 
     def __init__(self, *args, **kwargs):
         super(LikedPhotosHandler, self).__init__(*args, **kwargs)
-        self._logger = api.libs.log.get_logger('user')
+        self._logger = api.libs.log.get_logger('like')
 
     def __get_liked_photos(self):
         liked_photos = {}
         like_mgr = api.modules.like_manager.LikeManager()
         photos = like_mgr.get(self._params['uid'])
         for photo in photos:
-            photo_id = photo['_id']
+            try:
+                photo_id = bson.objectid.ObjectId(photo['photo_id'])
+            except bson.errors.InvalidId:
+                continue
             liked_photos[photo_id] = photo['ts']
         return liked_photos
 
@@ -36,7 +39,7 @@ class LikedPhotosHandler(api.handlers.base_handler.BaseHandler):
                 'photo_id': str(photo_id),
                 'url': photo_url,
             })
-        self._params['liked_photos'] = rets
+        self._rets['photos'] = rets
 
     def process(self):
         liked_photos = self.__get_liked_photos()

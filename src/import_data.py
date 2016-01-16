@@ -27,6 +27,7 @@ def main():
             'album_name': js['album'],
             'url': js['url'],
             'rand': random.random(),
+            'likes': 0,
         }
         photo_mgr.insert(photo)
 

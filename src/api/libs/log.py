@@ -117,7 +117,7 @@ def __init_logger(logger_name, log_filename, logger_level, file_level=None):
     global __inited_loggers
 
     # formatter
-    fmt = '%(levelname)s %(asctime)s %(filename)s|%(lineno)d\t%(message)s'
+    fmt = '%(levelname)s\t%(asctime)s\t%(message)s'
     formatter = logging.Formatter(fmt)
 
     # 日志 handler

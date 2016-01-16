@@ -18,11 +18,7 @@ class AlbumsHandler(api.handlers.base_handler.BaseHandler):
         """从服务器中获取写真集列表
         """
         self._rets['albums'] = []
-        #photo_mgr = api.modules.photo_manager.PhotoManager()
-        #photos = photo_mgr.find(condition).sort('_id', pymongo.DESCENDING)
-        #photos = photos.skip(self._params['skip']).limit(self._params['max'])
 
-        print "lala"
         album_mgr = api.modules.album_manager.AlbumManager()
         albums = album_mgr.get().sort('ts', pymongo.DESCENDING)
         albums = albums.skip(self._params['skip']).limit(self._params['max'])
@@ -30,7 +26,7 @@ class AlbumsHandler(api.handlers.base_handler.BaseHandler):
         for album in albums:
             # 为图片添加域名, 这样比较灵活
             album['_id'] = str(album['_id'])
-            album['cover_url'] = self._make_url(album['cover_url'])
+            album['cover'] = self._make_url(album['cover'])
             self._rets['albums'].append(album)
 
     def process(self):

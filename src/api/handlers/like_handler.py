@@ -11,7 +11,7 @@ class LikeHandler(api.handlers.base_handler.BaseHandler):
 
     def __init__(self, *args, **kwargs):
         super(LikeHandler, self).__init__(*args, **kwargs)
-        self._logger = api.libs.log.get_logger('user')
+        self._logger = api.libs.log.get_logger('like')
 
     def __get_arguments(self):
         self._params['photo_id'] = self.get_argument('photo_id', None)

@@ -29,7 +29,7 @@ class Version(object):
         if ver_str is None:
             return [0]
 
-        ver_nums = ver_str.split(".")
+        ver_nums = ver_str.strip(".").split(".")
         for index, num in enumerate(ver_nums):
             num = int(num)
             if num < 0:

@@ -13,6 +13,10 @@ class AlbumManager(object):
 
     def __init__(self):
         self.__coll = api.libs.database.Database().albums
+        self.__coll.create_index(
+            [('name', pymongo.ASCENDING), ('press', pymongo.ASCENDING)],
+            unique=True,
+        )
 
     def insert(self, album):
         """插入写真集信息
@@ -32,7 +36,10 @@ class AlbumManager(object):
             成功返回 id, 否则为 None
         """
         album['ts'] = int(time.time())
-        return self.__coll.insert(album)
+        try:
+            return self.__coll.insert(album)
+        except pymongo.errors.DuplicateKeyError:
+            return True
 
     def get(self, album={}):
         """可以通过任意维度来查询

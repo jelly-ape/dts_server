@@ -13,7 +13,6 @@ class BaseHandler(tornado.web.RequestHandler):
     def __init__(self, *args, **kwargs):
         super(BaseHandler, self).__init__(*args, **kwargs)
         self._conf = api.libs.config.get_config()
-        self._domain = self._conf.get('server', 'domain')
         self._cdn_domain = self._conf.get('cdn', 'domain')
         # 子类中可以修改为自己所属的, 不然默认为 root logger
         self._logger = api.libs.log.get_logger('root')
@@ -47,16 +46,6 @@ class BaseHandler(tornado.web.RequestHandler):
         self._params['rt'] = '{0:.03f}'.format(
             1000 * self.request.request_time()
         )
-
-    def _trace_url(self, tokens):
-        """为链接包装一层跳转, 用来记录特殊事件.
-        """
-        token.update(self._params)
-        url = '{0}/trace?{1}'.format(
-            self._domain,
-            urllib.urlencode(tokens),
-        )
-        return url
 
     def _make_url(self, url_suffix):
         url = '{0}/{1}'.format(

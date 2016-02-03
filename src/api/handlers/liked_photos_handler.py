@@ -19,6 +19,7 @@ class LikedPhotosHandler(api.handlers.base_handler.BaseHandler):
         liked_photos = {}
         like_mgr = api.modules.like_manager.LikeManager()
         photos = like_mgr.get(self._params['uid'])
+        photos = photos.skip(self._params['skip']).limit(self._params['max'])
         for photo in photos:
             try:
                 photo_id = bson.objectid.ObjectId(photo['photo_id'])

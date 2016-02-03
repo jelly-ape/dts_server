@@ -26,6 +26,8 @@ class RandomHandler(api.handlers.base_handler.BaseHandler):
                 "url": url,
                 "id": photo_id,
                 'likes': photo.get('likes', 0),
+                'album_name': photo.get('albums_name'),
+                'press': photo.get('press'),
             })
 
     def process(self):

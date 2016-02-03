@@ -10,6 +10,7 @@ import api.handlers.like_handler
 import api.handlers.liked_photos_handler
 import api.handlers.random_handler
 import api.handlers.ranking_handler
+import api.handlers.tumblr_handler
 
 
 def release_run():
@@ -27,6 +28,8 @@ def release_run():
          api.handlers.random_handler.RandomHandler),
         (root_path + r"/ranking",
          api.handlers.ranking_handler.RankingHandler),
+        (root_path + r"/tumblr",
+         api.handlers.tumblr_handler.TumblrHandler),
     ])
 
     conf = api.libs.config.get_config()

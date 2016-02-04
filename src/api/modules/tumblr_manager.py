@@ -2,6 +2,10 @@
 # -*- encoding: utf-8 -*-
 import pymongo
 import os
+try:
+    import ujson as json
+except ImportError:
+    import json
 import api.libs.utils
 
 
@@ -17,12 +21,13 @@ class TumblrManager(object):
         photo_file = os.path.join(
             os.path.abspath(os.path.dirname(__file__)),
             '../../../data',
-            'porn_imgs.part',
+            'some',
         )
         with open(photo_file) as f:
             for line in f:
                 line = line.strip()
-                photos.append(line)
+                js = json.loads(line)
+                photos.append(js)
         return photos
 
     def get(self, **kwargs):

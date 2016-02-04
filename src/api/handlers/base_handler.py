@@ -59,6 +59,7 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def get(self):
         try:
+            self.set_header("Access-Control-Allow-Origin", "*")
             self.__get_arguments()
             self.process()
             logger_level = 'info'

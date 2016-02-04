@@ -5,6 +5,7 @@ _config = {
     containerId: 'container',
     boxClass: 'box',
     loadingId: 'loading',
+    initd: false,
 }
 
 // 实现类似 Python 的 format 操作
@@ -79,6 +80,7 @@ function ajaxLoad() {
         success: function(data){
             setTimeout(function() {
                 parseData(data);
+                init();
                 _config.skip += _config.max;
                 $(window).bind('scroll', scroll);
             }, _config.timeout);
@@ -93,16 +95,18 @@ function ajaxLoad() {
 
 // 初始化操作
 function init() {
-    var $container = $("#" + _config.containerId).masonry({
-        itemSelector : '.' + _config.boxClass,
-        gutterWidth : 20,
-        isAnimated: true,
-    });
-    $(window).bind('scroll', scroll);
+    if (! _config.initd) {
+        var $container = $("#" + _config.containerId).masonry({
+            itemSelector : '.' + _config.boxClass,
+            gutterWidth : 20,
+            isAnimated: true,
+            isFitWidth: true,
+        });
+        _config.initd = true;
+    }
 }
 
 
 $(document).ready(function(){
-    init();
     ajaxLoad();
 });

@@ -1,23 +1,28 @@
 #container {
-    padding: 20px;
-    margin: 0 auto;
+    margin: 50px auto 0;
 }
 
 .box {
-    margin-bottom: 20px;
-    margin-right: 5px;
+    margin: 10px;
     float: left;
-    width: 220px;
+    width: 250px;
 }
 
 .box img {
-    max-width: 100%
+    max-width: 100%;
+    transition: all 0.15s ease-in-out;
+    -webkit-transition: all 0.15s ease-in-out;
+    -moz-transition: all 0.15s ease-in-out;
+    border: #eeeeee 1px solid;
+    border-radius: 4px;
+    outline: none;
 }
 
-.invisible {
-    margin: 0px;
-    width: 1px;
-    height: 1px;
+.box :hover {
+    border: #ff99bb 1px solid;
+    box-shadow: 0 0 8px rgba(255, 78, 136, 0.8);
+    -webkit-box-shadow: 0 0 8px rgba(255, 78, 136, 0.8);
+    -moz-box-shadow: 0 0 8px rgba(255, 78, 136, 0.8);
 }
 
 #loading {

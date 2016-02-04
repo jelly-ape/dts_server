@@ -1,0 +1,27 @@
+#container {
+    padding: 20px;
+    margin: 0 auto;
+}
+
+.box {
+    margin-bottom: 20px;
+    margin-right: 5px;
+    float: left;
+    width: 220px;
+}
+
+.box img {
+    max-width: 100%
+}
+
+.invisible {
+    margin: 0px;
+    width: 1px;
+    height: 1px;
+}
+
+#loading {
+    margin: 0 auto;
+    width: 400px;
+    height: 300px;
+}

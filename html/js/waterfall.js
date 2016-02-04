@@ -5,7 +5,9 @@ _config = {
     containerId: 'container',
     boxClass: 'box',
     loadingId: 'loading',
-    initd: false,
+    imgDivId: 'big_img',
+    coverId: 'cover',
+    init: false,
 }
 
 // 实现类似 Python 的 format 操作
@@ -43,8 +45,8 @@ function scroll() {
 // 新建一个 box
 function newBox(photo) {
     var box = document.createElement('div');
-    var img = '<img src="{0}" alt="{1}" width="{2}" height="{3}">'.format(
-        photo.thumb.url, photo.ori.url, photo.thumb.width, photo.thumb.height
+    var img = '<img class="thumb" src="{0}" alt="{1}" width="{2}" height="{3}" ori_width="{4}" ori_height="{5}">'.format(
+        photo.thumb.url, photo.ori.url, photo.thumb.width, photo.thumb.height, photo.ori.width, photo.ori.height
     );
     box.setAttribute('class', _config.boxClass);
     $(box).append(img);
@@ -59,7 +61,11 @@ function parseData(data) {
         photo = photos[i];
         // 添加新的 box 到容器中
         var box = newBox(photo);
-        $('#' + _config.containerId).append($(box)).masonry('appended', $(box), true);
+        if (_config.init) {
+            $('#' + _config.containerId).append($(box)).masonry('appended', $(box), true);
+        } else {
+            $('#' + _config.containerId).append($(box));
+        }
     }
 }
 
@@ -80,13 +86,13 @@ function ajaxLoad() {
         success: function(data){
             setTimeout(function() {
                 parseData(data);
-                init();
+                initWaterfall();
                 _config.skip += _config.max;
                 $(window).bind('scroll', scroll);
             }, _config.timeout);
         },
         complete: function(){
-            $("#" + _config.loadingId).show();
+            $("#" + _config.loadingId).hide();
             return;
         }
     });
@@ -94,19 +100,79 @@ function ajaxLoad() {
 }
 
 // 初始化操作
-function init() {
-    if (! _config.initd) {
+function initWaterfall() {
+    if (! _config.init) {
         var $container = $("#" + _config.containerId).masonry({
             itemSelector : '.' + _config.boxClass,
             gutterWidth : 20,
             isAnimated: true,
             isFitWidth: true,
         });
-        _config.initd = true;
+        _config.init = true;
     }
 }
 
+// 显示浮层
+function showCover(url, img_width, img_height) {
+    $(window).unbind('scroll', scroll);
+    var screen_width = $(window).width();
+    var screen_height = $(window).height();
+
+    // 浮层的大小
+    var cover = $('#' + _config.coverId);
+    cover.show();
+    cover.css('width', $(document).width());
+    cover.css('height', $(document).height());
+
+    // 添加图片
+    var img_div = $("#" + _config.imgDivId);
+    var img = img_div.find('img');
+    img.attr('src', url);
+
+    // 调整大图的展现大小
+    if (img_height > screen_height) {
+        img_width = (screen_height / img_height) * img_width;
+        img_height = screen_height;
+    }
+    if (img_width > screen_width) {
+        img_height = (screen_width / img_width) * img_height;
+        img_width = screen_width;
+    }
+    img_width *= 0.9;
+    img_height *= 0.9;
+    img.attr('width', img_width);
+    img.attr('height', img_height);
+
+    // 放在屏幕正中央
+    img_div.css('left', Math.floor((screen_width - img_width) / 2));
+    img_div.css('top', Math.floor((screen_height - img_height) / 2) + $(document).scrollTop());
+}
+
+// 隐藏浮层
+function hideCover() {
+    $('#' + _config.coverId).hide();
+    $(window).bind('scroll', scroll);
+}
+
+// 点击图片事件
+function listenClick() {
+    $("div").delegate("img", "click", function() {
+        if (typeof $(this).attr('alt') != 'undefined') {
+            var ori_img = $(this).attr('alt');
+            var ori_width = $(this).attr('ori_width');
+            var ori_height = $(this).attr('ori_height');
+            showCover(ori_img, ori_width, ori_height);
+        }
+    });
+}
 
 $(document).ready(function(){
+    hideCover();
     ajaxLoad();
+    listenClick();
+}).click(function(e) {
+    e = e || window.event;
+    if (e.target != $('#big_img')[0] && e.target == $('#mask')[0]) {
+        hideCover();
+    }
 });

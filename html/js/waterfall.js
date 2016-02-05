@@ -120,7 +120,6 @@ function showCover(url, img_width, img_height) {
 
     // 浮层的大小
     var cover = $('#' + _config.coverId);
-    cover.show();
     cover.css('width', $(document).width());
     cover.css('height', $(document).height());
 
@@ -138,20 +137,26 @@ function showCover(url, img_width, img_height) {
         img_height = (screen_width / img_width) * img_height;
         img_width = screen_width;
     }
-    img_width *= 0.9;
-    img_height *= 0.9;
+    img_width *= 0.95;
+    img_height *= 0.95;
     img.attr('width', img_width);
     img.attr('height', img_height);
 
     // 放在屏幕正中央
     img_div.css('left', Math.floor((screen_width - img_width) / 2));
     img_div.css('top', Math.floor((screen_height - img_height) / 2) + $(document).scrollTop());
+    img_div.hide();
+    cover.fadeIn(150, function(){
+        img_div.fadeIn(300, function(){});
+    });
 }
 
 // 隐藏浮层
 function hideCover() {
-    $('#' + _config.coverId).hide();
-    $(window).bind('scroll', scroll);
+    $('#' + _config.coverId).fadeOut(300, function(){
+        $(window).bind('scroll', scroll);
+    });
+
 }
 
 // 点击图片事件

@@ -1,6 +1,7 @@
 body {
     padding: 0;
     margin: 0;
+    background: #333;
 }
 
 #container {
@@ -18,13 +19,13 @@ body {
     transition: all 0.15s ease-in-out;
     -webkit-transition: all 0.15s ease-in-out;
     -moz-transition: all 0.15s ease-in-out;
-    border: #eeeeee 1px solid;
+    border: #222222 1px solid;
     border-radius: 4px;
     outline: none;
 }
 
 .box :hover {
-    border: #ff99bb 1px solid;
+    border: #ff4e88 1px solid;
     box-shadow: 0 0 8px rgba(255, 78, 136, 0.8);
     -webkit-box-shadow: 0 0 8px rgba(255, 78, 136, 0.8);
     -moz-box-shadow: 0 0 8px rgba(255, 78, 136, 0.8);
@@ -43,8 +44,8 @@ body {
 }
 
 #mask {
-    opacity: 0.5;
-    background: #333;
+    opacity: 0.7;
+    background: #000;
     width: 100%;
     height: 100%;
 }

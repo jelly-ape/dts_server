@@ -80,8 +80,7 @@ function ajaxLoad() {
         url: url,
         dataType: 'json',
         beforeSend: function(){
-            $("#" + _config.loadingId).show();
-            return;
+            $("#" + _config.loadingId).fadeIn(_config.timeout, function(){});
         },
         success: function(data){
             setTimeout(function() {
@@ -92,8 +91,7 @@ function ajaxLoad() {
             }, _config.timeout);
         },
         complete: function(){
-            $("#" + _config.loadingId).hide();
-            return;
+            $("#" + _config.loadingId).fadeOut(_config.timeout, function(){});
         }
     });
 

@@ -14,7 +14,11 @@ class RankingHandler(api.handlers.base_handler.BaseHandler):
 
     def __get_ranking(self):
         photo_mgr = api.modules.photo_manager.PhotoManager()
-        photos = photo_mgr.get().sort('likes', pymongo.DESCENDING)
+        condition = {}
+        if self._params['audit_ver'] <= self._params['ver']:
+            condition['press'] = 'Its-OK'
+            condition['album_name'] = 'Vol.01'
+        photos = photo_mgr.get(condition).sort('likes', pymongo.DESCENDING)
         photos = photos.skip(self._params['skip']).limit(self._params['max'])
         self._rets['photos'] = []
         for photo in photos:

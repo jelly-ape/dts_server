@@ -32,6 +32,9 @@ class BaseHandler(tornado.web.RequestHandler):
         self._params['ver'] = api.libs.version.Version(
             self.get_argument('ver', '0.0')
         )
+        self._params['audit_ver'] = api.libs.version.Version(
+            self._conf.get('server', 'audit_ver')
+        )
 
     def _write(self):
         """传送到客户端, json 封装

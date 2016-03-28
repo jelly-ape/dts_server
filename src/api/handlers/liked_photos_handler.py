@@ -40,6 +40,7 @@ class LikedPhotosHandler(api.handlers.base_handler.BaseHandler):
                 'photo_id': str(photo_id),
                 'url': photo_url,
             })
+            rets.sort(key=lambda x: x['ts'], reverse=True)
         self._rets['photos'] = rets
 
     def process(self):

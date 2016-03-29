@@ -18,6 +18,8 @@ class RankingHandler(api.handlers.base_handler.BaseHandler):
         if self._params['audit_ver'] <= self._params['ver']:
             condition['press'] = 'Its-OK'
             condition['album_name'] = 'Vol.01'
+        else:
+            condition['press'] = {'$ne': 'Its-OK'}
         photos = photo_mgr.get(condition).sort('likes', pymongo.DESCENDING)
         photos = photos.skip(self._params['skip']).limit(self._params['max'])
         self._rets['photos'] = []

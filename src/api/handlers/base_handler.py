@@ -57,6 +57,14 @@ class BaseHandler(tornado.web.RequestHandler):
         )
         return url
 
+    def _for_audit(self):
+        condition = {}
+        if self._params['audit_ver'] <= self._params['ver']:
+            condition['press'] = 'ForAudit'
+        else:
+            condition['press'] = {'$ne': 'ForAudit'}
+        return condition
+
     def process(self):
         pass
 

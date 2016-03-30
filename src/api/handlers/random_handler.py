@@ -16,11 +16,7 @@ class RandomHandler(api.handlers.base_handler.BaseHandler):
     def __get_photos(self):
         photo_mgr = api.modules.photo_manager.PhotoManager()
         condition = {}
-        if self._params['audit_ver'] <= self._params['ver']:
-            condition['press'] = 'Its-OK'
-            condition['album_name'] = 'Vol.01'
-        else:
-            condition['press'] = {'$ne': 'Its-OK'}
+        condition = self._for_audit()
         photos = photo_mgr.get(condition).sort('rand', pymongo.ASCENDING)
         photos = photos.skip(self._params['skip']).limit(self._params['max'])
 

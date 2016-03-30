@@ -20,12 +20,7 @@ class AlbumsHandler(api.handlers.base_handler.BaseHandler):
         self._rets['albums'] = []
 
         album_mgr = api.modules.album_manager.AlbumManager()
-        condition = {}
-        if self._params['audit_ver'] <= self._params['ver']:
-            condition['press'] = 'Its-OK'
-        else:
-            condition['press'] = {'$ne': 'Its-OK'}
-
+        condition = self._for_audit()
         albums = album_mgr.get(condition).sort('ts', pymongo.DESCENDING)
         albums = albums.skip(self._params['skip']).limit(self._params['max'])
 
